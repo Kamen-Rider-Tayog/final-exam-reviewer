@@ -8,7 +8,7 @@ A clean, minimal quiz application built with React, TypeScript, and Tailwind CSS
 ## ✨ Features
 
 - **📚 6 Subjects**: Math, Computer Science, Digital Logic, OOP, Databases, Information Systems
-- **🧠 5 Questions per Subject**: 30 total questions with detailed explanations
+- **🧠 50 Questions per Subject**: 300 total questions with detailed explanations
 - **⚡ Instant Grading**: Real-time score calculation with letter grades
 - **🏆 Leaderboard**: Track top scores across all subjects
 - **📱 Mobile-Friendly**: Fully responsive design
