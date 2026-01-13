@@ -39,8 +39,11 @@ jobs:
       - name: Build
         run: npm run build
       
+      # ADD THIS: enablement parameter to help with initial setup
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true  # This attempts to enable Pages if not already enabled
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -51,6 +54,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    # ADD THIS: environment configuration
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
