@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, BookOpen, ChevronDown } from 'lucide-react';
+import { BookOpen, ChevronDown } from 'lucide-react';
 import { SUBJECTS } from '../data/subjects';
 
 interface QuizModalProps {
