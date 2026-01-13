@@ -1,4 +1,5 @@
-import { Trophy, Clock, CheckCircle, XCircle, BarChart3, Home, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
+import { Trophy, Clock, CheckCircle, XCircle, Home, RotateCcw, Eye, ChevronUp } from 'lucide-react';
 import type { QuizState } from '../types';
 import { calculateGrade, getPerformanceMessage, formatDuration } from '../utils/grading';
 import { saveToLeaderboard } from '../utils/storage';
@@ -18,6 +19,7 @@ export default function ResultsPage({
   onLeaderboard, 
   onHome 
 }: ResultsPageProps) {
+  const [showQuestions, setShowQuestions] = useState(false);
   
   const calculateResults = () => {
     let correct = 0;
@@ -51,169 +53,172 @@ export default function ResultsPage({
   saveToLeaderboard(leaderboardEntry);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8 pt-4">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Quiz Results</h1>
-          <p className="text-gray-700">Congratulations on completing the quiz!</p>
-        </div>
+    <div className="min-h-screen w-screen max-w-[100vw] bg-gray-50">
+      <div className="p-4 w-full max-w-[100vw]">
+        <div className="max-w-4xl mx-auto">
+          {/* Header - Minimal */}
+          <div className="text-center mb-8 pt-4">
+            <h1 className="text-xl font-medium text-gray-800">Results</h1>
+            <p className="text-gray-500 text-sm mt-1">{state.subjectId.toUpperCase()} • {results.total} Questions</p>
+          </div>
 
-        {/* Score Card */}
-        <div className="bg-white border border-gray-300 rounded-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div className="mb-4 md:mb-0">
-              <h2 className="text-xl font-bold text-gray-800">{state.username}</h2>
-              <p className="text-gray-600">{state.subjectId.toUpperCase()} • {results.total} Questions</p>
+          {/* Score Card - Minimal */}
+          <div className="bg-white border rounded-lg p-6 mb-6">
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative w-32 h-32 mb-4">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={`${results.score * 2.83} 283`}
+                    transform="rotate(-90 50 50)"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-gray-800">{results.score}%</div>
+                    <div className="text-sm text-gray-500">{results.correct}/{results.total}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Centered Grade */}
+              <div className="text-center mb-3">
+                <div className="text-lg font-medium text-gray-700 mb-1">Grade</div>
+                <div className="text-4xl font-bold text-blue-600">{grade}</div>
+              </div>
+
+              <p className="text-gray-600 text-sm">{message}</p>
             </div>
-            <div className="text-center md:text-right">
-              <div className="text-4xl font-bold text-blue-600">{results.score}%</div>
-              <div className="text-gray-700">Final Score</div>
+
+            {/* Simple Stats */}
+            <div className="grid grid-cols-3 gap-3 border-t pt-4">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <Clock className="w-4 h-4 text-gray-500 mr-1" />
+                  <div className="text-sm text-gray-600">Time</div>
+                </div>
+                <div className="font-medium">{durationFormatted}</div>
+              </div>
+
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                  <div className="text-sm text-gray-600">Correct</div>
+                </div>
+                <div className="font-medium">{results.correct}</div>
+              </div>
+
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-1">
+                  <XCircle className="w-4 h-4 text-red-500 mr-1" />
+                  <div className="text-sm text-gray-600">Wrong</div>
+                </div>
+                <div className="font-medium">{results.total - results.correct}</div>
+              </div>
             </div>
           </div>
 
-          {/* Performance */}
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* Score Circle */}
-            <div className="relative w-48 h-48 mx-auto md:mx-0">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="8" />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeDasharray={`${results.score * 2.83} 283`}
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-800">{results.correct}/{results.total}</div>
-                  <div className="text-gray-600">Correct</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Grade & Stats */}
-            <div className="flex-1">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg text-lg font-bold mb-4 md:mb-0">
-                  Grade: {grade}
-                </div>
-                <div className="text-gray-700 font-medium">{message}</div>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <Clock className="w-5 h-5 text-blue-600 mr-2" />
-                    <h3 className="font-bold text-gray-800">Time</h3>
-                  </div>
-                  <div className="text-2xl font-bold text-gray-800">{durationFormatted}</div>
-                </div>
-
-                <div className="bg-green-50 border border-green-100 rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                    <h3 className="font-bold text-gray-800">Correct</h3>
-                  </div>
-                  <div className="text-2xl font-bold text-gray-800">{results.correct}</div>
-                </div>
-
-                <div className="bg-red-50 border border-red-100 rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <XCircle className="w-5 h-5 text-red-600 mr-2" />
-                    <h3 className="font-bold text-gray-800">Incorrect</h3>
-                  </div>
-                  <div className="text-2xl font-bold text-gray-800">{results.total - results.correct}</div>
-                </div>
-              </div>
-            </div>
+          {/* Action Buttons - Simple */}
+          <div className="grid grid-cols-4 gap-2 mb-6">
+            <button
+              onClick={onRetake}
+              className="bg-white border rounded-lg p-3 flex flex-col items-center hover:bg-gray-50 transition"
+              title="Retake Quiz"
+            >
+              <RotateCcw className="w-5 h-5 text-gray-600 mb-1" />
+              <span className="text-xs text-gray-600">Retake</span>
+            </button>
+            
+            <button
+              onClick={() => setShowQuestions(!showQuestions)}
+              className="bg-white border rounded-lg p-3 flex flex-col items-center hover:bg-gray-50 transition"
+              title="View Details"
+            >
+              <Eye className="w-5 h-5 text-gray-600 mb-1" />
+              <span className="text-xs text-gray-600">Details</span>
+            </button>
+            
+            <button
+              onClick={onLeaderboard}
+              className="bg-white border rounded-lg p-3 flex flex-col items-center hover:bg-gray-50 transition"
+              title="Leaderboard"
+            >
+              <Trophy className="w-5 h-5 text-gray-600 mb-1" />
+              <span className="text-xs text-gray-600">Rank</span>
+            </button>
+            
+            <button
+              onClick={onHome}
+              className="bg-white border rounded-lg p-3 flex flex-col items-center hover:bg-gray-50 transition"
+              title="Home"
+            >
+              <Home className="w-5 h-5 text-gray-600 mb-1" />
+              <span className="text-xs text-gray-600">Home</span>
+            </button>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <button
-            onClick={onRetake}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg flex flex-col items-center justify-center transition"
-          >
-            <RotateCcw className="w-6 h-6 mb-2" />
-            <span className="font-medium">Retake</span>
-          </button>
-          
-          <button
-            onClick={onReview}
-            className="bg-gray-800 hover:bg-gray-900 text-white p-4 rounded-lg flex flex-col items-center justify-center transition"
-          >
-            <BarChart3 className="w-6 h-6 mb-2" />
-            <span className="font-medium">Review</span>
-          </button>
-          
-          <button
-            onClick={onLeaderboard}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg flex flex-col items-center justify-center transition"
-          >
-            <Trophy className="w-6 h-6 mb-2" />
-            <span className="font-medium">Leaderboard</span>
-          </button>
-          
-          <button
-            onClick={onHome}
-            className="bg-gray-800 hover:bg-gray-900 text-white p-4 rounded-lg flex flex-col items-center justify-center transition"
-          >
-            <Home className="w-6 h-6 mb-2" />
-            <span className="font-medium">Home</span>
-          </button>
-        </div>
-
-        {/* Question Breakdown */}
-        <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Question Breakdown</h3>
-          <div className="space-y-3">
-            {state.questions.map((question, index) => {
-              const isCorrect = state.answers[index] === question.correctAnswer;
-              return (
-                <div
-                  key={question.id}
-                  className={`flex items-center justify-between p-3 rounded border ${
-                    isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
-                  }`}
+          {/* Question Breakdown - Minimal */}
+          {showQuestions && (
+            <div className="bg-white border rounded-lg mb-6">
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-sm font-medium text-gray-700">Question Details</h3>
+                <button
+                  onClick={() => setShowQuestions(false)}
+                  className="text-gray-500 hover:text-gray-700"
                 >
-                  <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded flex items-center justify-center mr-3 ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-800">Question {index + 1}</div>
-                      <div className="text-sm text-gray-600">
-                        {isCorrect ? 'Correct' : 'Incorrect'}
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="max-h-64 overflow-y-auto">
+                {state.questions.map((question, index) => {
+                  const isCorrect = state.answers[index] === question.correctAnswer;
+                  return (
+                    <div
+                      key={question.id}
+                      className={`p-3 border-b ${isCorrect ? '' : 'bg-red-50'}`}
+                    >
+                      <div className="flex items-center">
+                        <div className={`w-6 h-6 rounded flex items-center justify-center text-xs mr-3 ${isCorrect ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm text-gray-700">
+                            Your answer: {String.fromCharCode(65 + (state.answers[index] || 0))}
+                            {!isCorrect && ` • Correct: ${String.fromCharCode(65 + question.correctAnswer)}`}
+                          </div>
+                        </div>
+                        <div className={`text-xs px-2 py-1 rounded ${isCorrect ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-100'}`}>
+                          {isCorrect ? '✓' : '✗'}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className={`px-3 py-1 rounded text-sm font-medium ${
-                    isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {isCorrect ? '+1' : '0'}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                  );
+                })}
+              </div>
+              
+              <div className="p-3 border-t">
+                <button
+                  onClick={onReview}
+                  className="w-full text-sm border rounded-lg py-2 hover:bg-gray-50 transition"
+                >
+                  Review Questions
+                </button>
+              </div>
+            </div>
+          )}
 
-        {/* Footer */}
-        <div className="text-center mt-8 pt-6 border-t border-gray-300">
-          <p className="text-gray-700">
-            Want to improve your score? Review the questions you missed and try again!
-          </p>
+          {/* Simple Footer */}
+          <div className="text-center text-sm text-gray-500 pt-4 border-t">
+            Score saved to leaderboard • Ready for another challenge?
+          </div>
         </div>
       </div>
     </div>

@@ -35,12 +35,6 @@ export default function QuizModal({ onClose, onStart }: QuizModalProps) {
               <p className="text-gray-600 text-sm">Choose your subject</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
         </div>
 
         {/* Modal Body */}
@@ -115,11 +109,11 @@ export default function QuizModal({ onClose, onStart }: QuizModalProps) {
             <div className="text-sm text-gray-700 space-y-2">
               <div className="flex justify-between">
                 <span>Questions:</span>
-                <span className="font-medium">5</span>
+                <span className="font-medium">50</span>
               </div>
               <div className="flex justify-between">
                 <span>Time:</span>
-                <span className="font-medium">No limit</span>
+                <span className="font-medium">60 Minutes</span>
               </div>
               <div className="flex justify-between">
                 <span>Passing:</span>

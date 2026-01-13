@@ -1,52 +1,76 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Medal, Calendar, Clock, User, ArrowLeft } from 'lucide-react';
+import { Trophy, User, ArrowLeft } from 'lucide-react';
 import { SUBJECTS } from '../data/subjects';
 import { getLeaderboard } from '../utils/storage';
 import type { LeaderboardEntry } from '../types';
+import { calculateGrade } from '../utils/grading';
 
 interface LeaderboardProps {
   onBack: () => void;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function Leaderboard({ onBack }: LeaderboardProps) {
   const [selectedSubject, setSelectedSubject] = useState('math1a');
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const data = getLeaderboard(selectedSubject);
     setLeaderboardData(data);
+    setTotalPages(Math.ceil(data.length / ITEMS_PER_PAGE));
+    setCurrentPage(1);
   }, [selectedSubject]);
 
   const selectedSubjectData = SUBJECTS.find(s => s.id === selectedSubject);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentData = leaderboardData.slice(startIndex, endIndex);
+
+  const getGrade = (percentage: number) => {
+    if (percentage >= 97) return '1.00';
+    if (percentage >= 94) return '1.25';
+    if (percentage >= 91) return '1.50';
+    if (percentage >= 88) return '1.75';
+    if (percentage >= 85) return '2.00';
+    if (percentage >= 82) return '2.25';
+    if (percentage >= 79) return '2.50';
+    if (percentage >= 76) return '2.75';
+    if (percentage >= 75) return '3.00';
+    if (percentage >= 70) return '4.00';
+    return '5.00'; // Below 70%
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pt-4">
-          <div className="flex items-center mb-4 md:mb-0">
-            <button
-              onClick={onBack}
-              className="mr-4 p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Leaderboard</h1>
-              <p className="text-gray-600">Top scores across all subjects</p>
-            </div>
+        <div className="flex items-center mb-4">
+          <button
+            onClick={onBack}
+            className="p-2 hover:bg-gray-100 rounded-lg mr-3"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Leaderboard</h1>
+            <p className="text-gray-600 text-sm">Top scores by subject</p>
           </div>
-          
-          {/* Subject Selector */}
+        </div>
+        
+        {/* Subject Selector */}
+        <div className="mb-4">
           <div className="flex space-x-2 overflow-x-auto pb-2">
             {SUBJECTS.map((subject) => (
               <button
                 key={subject.id}
                 onClick={() => setSelectedSubject(subject.id)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
+                className={`px-3 py-2 rounded-lg whitespace-nowrap text-sm md:text-base ${
                   selectedSubject === subject.id
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white border text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {subject.code}
@@ -56,157 +80,169 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
         </div>
 
         {/* Subject Info */}
-        <div className="bg-white border border-gray-300 rounded-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div className="flex items-center mb-4 md:mb-0">
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4">
-                <Trophy className="w-6 h-6 text-white" />
+        <div className="bg-white rounded-lg p-4 mb-4 shadow">
+          <div className="flex items-center justify-between">
+            {/* Left side - Subject Info */}
+            <div className="flex items-center min-w-0 flex-1 mr-4">
+              <div className="flex-shrink-0 mr-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-white" />
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">{selectedSubjectData?.code}</h2>
-                <p className="text-gray-600">{selectedSubjectData?.title}</p>
+              <div className="min-w-0">
+                <h2 className="text-base font-bold text-gray-800 truncate">{selectedSubjectData?.code}</h2>
+                <p className="text-gray-600 text-xs truncate">{selectedSubjectData?.title}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{leaderboardData.length}</div>
-                <div className="text-gray-600 text-sm">Total Entries</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+
+            {/* Right side - Stats */}
+            <div className="flex items-center space-x-3">
+              <div className="text-center min-w-16">
+                <div className="text-base font-bold text-blue-600">
                   {leaderboardData[0]?.percentage || 0}%
                 </div>
-                <div className="text-gray-600 text-sm">Top Score</div>
+                <div className="text-gray-600 text-xs truncate">Top</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {leaderboardData.length > 1 ? leaderboardData[1]?.percentage || 0 : 0}%
+              <div className="text-center min-w-16">
+                <div className="text-base font-bold text-blue-600">
+                  {leaderboardData.length > 0 
+                    ? Math.round(leaderboardData.reduce((acc, entry) => acc + entry.percentage, 0) / leaderboardData.length)
+                    : 0
+                  }%
                 </div>
-                <div className="text-gray-600 text-sm">2nd Place</div>
+                <div className="text-gray-600 text-xs truncate">Average</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Leaderboard Table */}
-        <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
-          {/* Table Header */}
-          <div className="hidden md:grid grid-cols-12 bg-gray-50 border-b border-gray-300 p-4 text-gray-700 font-medium">
-            <div className="col-span-1">Rank</div>
-            <div className="col-span-4">Name</div>
-            <div className="col-span-2">Score</div>
-            <div className="col-span-2">Grade</div>
-            <div className="col-span-3">Date & Time</div>
+        <div className="bg-white border rounded-lg shadow">
+          {/* Header - Columns exactly match data columns */}
+          <div className="flex px-4 py-3 border-b bg-gray-50 text-gray-600 text-sm justify-between">
+            <div className="w-8 md:w-9 flex items-center justify-center flex-shrink-0">
+              <Trophy className="w-4 h-4" />
+            </div>
+            <div className="flex-1 md:flex-none md:w-[200px] lg:w-[250px] min-w-0 font-medium pl-2">Student</div>
+            <div className="w-20 md:w-24 flex-shrink-0 text-right font-medium">Score</div>
+            <div className="w-16 md:w-20 flex-shrink-0 text-center font-medium">Grade</div>
+            <div className="w-24 md:w-32 flex-shrink-0 text-right font-medium">Date & Time</div>
           </div>
 
-          {/* Table Body */}
-          {leaderboardData.length > 0 ? (
-            <div className="divide-y divide-gray-200">
-              {leaderboardData.map((entry, index) => (
-                <div key={index} className="p-4 hover:bg-gray-50">
-                  <div className="flex flex-col md:grid md:grid-cols-12 md:items-center">
+          {currentData.length > 0 ? (
+            <div className="divide-y">
+              {currentData.map((entry, index) => (
+                <div key={startIndex + index} className="group hover:bg-gray-50">
+                  {/* Full width one-line layout */}
+                  <div className="flex items-center px-4 py-3 justify-between">
                     {/* Rank */}
-                    <div className="flex items-center mb-2 md:mb-0 md:col-span-1">
-                      {index === 0 && <Medal className="w-5 h-5 text-yellow-500 mr-2" />}
-                      {index === 1 && <Medal className="w-5 h-5 text-gray-400 mr-2" />}
-                      {index === 2 && <Medal className="w-5 h-5 text-amber-700 mr-2" />}
-                      <div className={`w-8 h-8 rounded flex items-center justify-center font-bold ${
-                        index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                        index === 1 ? 'bg-gray-100 text-gray-800' :
-                        index === 2 ? 'bg-amber-100 text-amber-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {index + 1}
-                      </div>
+                    <div className={`w-8 md:w-9 h-8 md:h-9 rounded flex items-center justify-center font-bold flex-shrink-0 ${
+                      startIndex + index === 0 ? 'bg-yellow-100 text-yellow-800' :
+                      startIndex + index === 1 ? 'bg-gray-100 text-gray-800' :
+                      startIndex + index === 2 ? 'bg-amber-100 text-amber-800' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {startIndex + index + 1}
                     </div>
 
                     {/* Name */}
-                    <div className="flex items-center mb-2 md:mb-0 md:col-span-4">
-                      <User className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="font-medium text-gray-800">{entry.username}</span>
+                    <div className="flex-1 md:flex-none md:w-[200px] lg:w-[250px] min-w-0 px-2">
+                      <div className="flex items-center">
+                        <User className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+                        <div className="font-medium truncate">{entry.username}</div>
+                      </div>
                     </div>
 
                     {/* Score */}
-                    <div className="mb-2 md:mb-0 md:col-span-2">
-                      <div className="flex items-center">
-                        <div className="font-bold text-gray-800">{entry.score}/5</div>
-                        <div className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
-                          {entry.percentage}%
-                        </div>
-                      </div>
+                    <div className="w-20 md:w-24 flex-shrink-0 text-right">
+                      <div className="font-bold md:text-lg">{entry.score}/50</div>
+                      <div className="text-xs md:text-sm text-gray-500">{entry.percentage}%</div>
                     </div>
 
                     {/* Grade */}
-                      <div className="mb-2 md:mb-0 md:col-span-1">
-                        <div className={`inline-block px-2 py-1 rounded text-xs font-bold ${
-                          entry.percentage >= 90 ? 'bg-green-100 text-green-800' :
-                          entry.percentage >= 80 ? 'bg-blue-100 text-blue-800' :
-                          entry.percentage >= 70 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {entry.percentage >= 97 ? 'A+' :
-                          entry.percentage >= 93 ? 'A' :
-                          entry.percentage >= 90 ? 'A-' :
-                          entry.percentage >= 87 ? 'B+' :
-                          entry.percentage >= 83 ? 'B' :
-                          entry.percentage >= 80 ? 'B-' :
-                          entry.percentage >= 77 ? 'C+' :
-                          entry.percentage >= 73 ? 'C' :
-                          entry.percentage >= 70 ? 'C-' :
-                          entry.percentage >= 60 ? 'D' : 'F'}
-                        </div>
-                      </div>
+                    <div className={`w-16 md:w-20 flex-shrink-0 text-center font-bold md:text-lg ${
+                      entry.percentage >= 90 ? 'text-green-600' :
+                      entry.percentage >= 80 ? 'text-blue-600' :
+                      entry.percentage >= 70 ? 'text-yellow-600' :
+                      'text-red-600'
+                    }`}>
+                      {getGrade(entry.percentage)}
+                    </div>
 
-                    {/* Date & Time */}
-                    <div className="flex items-center md:col-span-3">
-                      <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-700 text-sm mr-4">{entry.date}</span>
-                      <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-700 text-sm">{entry.time}</span>
+                    {/* Time */}
+                    <div className="w-24 md:w-32 flex-shrink-0 text-right text-sm text-gray-500">
+                      <div className="hidden md:block truncate">{entry.date}</div>
+                      <div className="truncate">{entry.time}</div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-12 text-center">
-              <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-800 mb-2">No scores yet</h3>
-              <p className="text-gray-600">Be the first to take a quiz for this subject!</p>
+            <div className="p-8 text-center text-gray-400">
+              No scores recorded yet
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="border-t p-4">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-0">
+                <div className="text-sm text-gray-600">
+                  Showing {startIndex + 1}-{Math.min(endIndex, leaderboardData.length)} of {leaderboardData.length}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm border rounded disabled:opacity-30 hover:bg-gray-50"
+                  >
+                    ← Previous
+                  </button>
+                  <span className="px-3 py-1 bg-gray-100 rounded text-sm">
+                    {currentPage}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm border rounded disabled:opacity-30 hover:bg-gray-50"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Stats Footer */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white border border-gray-300 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-600 mb-1">
-              {leaderboardData.filter(e => e.percentage >= 90).length}
+        {/* Simple Stats Footer */}
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="bg-white rounded-lg p-3 shadow text-center">
+            <div className="text-lg font-bold text-blue-600">
+              {leaderboardData.length > 0 
+                ? calculateGrade(leaderboardData[0]?.percentage || 0)
+                : 'N/A'
+              }
             </div>
-            <div className="text-gray-700">A Grades</div>
+            <div className="text-gray-700 text-sm">Top Grade</div>
           </div>
-          <div className="bg-white border border-gray-300 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-600 mb-1">
-              {leaderboardData.reduce((acc, entry) => acc + entry.score, 0)}
-            </div>
-            <div className="text-gray-700">Total Correct Answers</div>
-          </div>
-          <div className="bg-white border border-gray-300 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-600 mb-1">
+          
+          <div className="bg-white rounded-lg p-3 shadow text-center">
+            <div className="text-lg font-bold text-blue-600">
               {leaderboardData.length > 0 
                 ? Math.round(leaderboardData.reduce((acc, entry) => acc + entry.percentage, 0) / leaderboardData.length)
                 : 0
               }%
             </div>
-            <div className="text-gray-700">Average Score</div>
+            <div className="text-gray-700 text-sm">Avg Score</div>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8 pt-8 border-t border-gray-300">
-          <p className="text-gray-600">
-            Leaderboard updates after each completed quiz
-          </p>
+          
+          <div className="bg-white rounded-lg p-3 shadow text-center">
+            <div className="text-lg font-bold text-blue-600">
+              {leaderboardData.length}
+            </div>
+            <div className="text-gray-700 text-sm">Participants</div>
+          </div>
         </div>
       </div>
     </div>

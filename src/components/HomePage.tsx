@@ -11,9 +11,9 @@ export default function HomePage({ onStartQuiz, onViewLeaderboard }: HomePagePro
   const [showQuizModal, setShowQuizModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="max-w-6xl mx-auto px-6 pt-8">
-        <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+      <header className="max-w-[100vw] px-6 pt-8">
+        <div className="flex justify-between items-center max-w-4xl mx-auto">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
@@ -52,12 +52,12 @@ export default function HomePage({ onStartQuiz, onViewLeaderboard }: HomePagePro
         </div>
       </main>
 
-      <footer className="max-w-6xl mx-auto px-6 py-8 text-center border-t border-gray-200">
+      <footer className="max-w-6xl mx-auto px-6 py-8 text-center">
         <p className="text-gray-500">
           QuizMaster • Practice makes perfect
         </p>
         <p className="text-gray-400 text-sm mt-2">
-          Made with care by Tayog
+          Made with ❤︎ by Tayog
         </p>
       </footer>
 
