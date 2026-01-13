@@ -20,7 +20,9 @@ export const saveToLeaderboard = (entry: LeaderboardEntry) => {
   const boards = JSON.parse(localStorage.getItem(BOARD_KEY) || '{}');
   const board = boards[entry.subjectId] || [];
   board.push(entry);
-  board.sort((a, b) => b.score - a.score || a.duration - b.duration);
+  board.sort((a: LeaderboardEntry, b: LeaderboardEntry) => 
+    b.score - a.score || a.duration - b.duration
+  );
   boards[entry.subjectId] = board.slice(0, 10);
   localStorage.setItem(BOARD_KEY, JSON.stringify(boards));
 };
