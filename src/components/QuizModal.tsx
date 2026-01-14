@@ -117,7 +117,7 @@ export default function QuizModal({ onClose, onStart }: QuizModalProps) {
               </div>
               <div className="flex justify-between">
                 <span>Passing:</span>
-                <span className="font-medium">60%</span>
+                <span className="font-medium">70%</span>
               </div>
             </div>
           </div>
