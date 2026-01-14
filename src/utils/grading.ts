@@ -1,14 +1,13 @@
 export function calculateGrade(percentage: number): string {
-  if (percentage >= 97) return '1.00';
-  if (percentage >= 94) return '1.25';
-  if (percentage >= 91) return '1.50';
-  if (percentage >= 88) return '1.75';
-  if (percentage >= 85) return '2.00';
-  if (percentage >= 82) return '2.25';
-  if (percentage >= 79) return '2.50';
-  if (percentage >= 76) return '2.75';
-  if (percentage >= 75) return '3.00';
-  if (percentage >= 70) return '4.00';
+  if (percentage >= 96) return '1.20';
+  if (percentage >= 93) return '1.25';
+  if (percentage >= 90) return '1.50';
+  if (percentage >= 87) return '1.75';
+  if (percentage >= 84) return '2.00';
+  if (percentage >= 81) return '2.25';
+  if (percentage >= 78) return '2.50';
+  if (percentage >= 75) return '2.75';
+  if (percentage >= 70) return '3.00';
   return '5.00';
 }
 
