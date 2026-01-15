@@ -212,8 +212,8 @@ export const INSY50_QUESTIONS: Question[] = [
     question: 'Machine learning finds patterns in data.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Machine learning uses data patterns.'
+    correctAnswer: 1,
+    explanation: 'Machine learning uses data patterns to make predictions.'
   },
   {
     id: 'insy50-24',
@@ -300,8 +300,8 @@ export const INSY50_QUESTIONS: Question[] = [
     question: 'Automation replaces manual tasks.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Automation replaces manual work.'
+    correctAnswer: 1,
+    explanation: 'Automation replaces manual work with technology.'
   },
   {
     id: 'insy50-35',
@@ -361,8 +361,8 @@ export const INSY50_QUESTIONS: Question[] = [
     question: 'Waterfall phases are sequential.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Waterfall = sequential phases.'
+    correctAnswer: 1,
+    explanation: 'Waterfall = sequential phases with no going back.'
   },
   {
     id: 'insy50-42',
@@ -401,16 +401,16 @@ export const INSY50_QUESTIONS: Question[] = [
     question: 'Ethics are principles of right and wrong.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Ethics = right/wrong principles.'
+    correctAnswer: 1,
+    explanation: 'Ethics = principles of right and wrong behavior.'
   },
   {
     id: 'insy50-47',
     question: 'Morals are personal beliefs.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Morals = personal beliefs.'
+    correctAnswer: 1,
+    explanation: 'Morals = personal beliefs about right and wrong.'
   },
   {
     id: 'insy50-48',
@@ -425,8 +425,8 @@ export const INSY50_QUESTIONS: Question[] = [
     question: 'Information rights is a moral dimension.',
     type: 'boolean',
     choices: ['True', 'False'],
-    correctAnswer: 0,
-    explanation: 'Information rights = moral dimension.'
+    correctAnswer: 1,
+    explanation: 'Information rights involve ethical considerations about data.'
   },
   {
     id: 'insy50-50',
